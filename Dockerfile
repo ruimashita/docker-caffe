@@ -30,7 +30,7 @@ ENV PYTHONPATH /opt/caffe/python
 ENV PATH $PATH:/opt/caffe/.build_release/tools
 
 # Get dependencies
-RUN apt-get update && apt-get install -y \
+RUN rm -rf /var/lib/apt/lists/ && apt-get update && apt-get install -y \
   bc \ 
   cmake \ 
   curl \ 
@@ -96,4 +96,5 @@ RUN cd /opt/caffe && make pycaffe
 
  
 # Make + run tests
-RUN cd /opt/caffe && make test && make runtest
+RUN cd /opt/caffe && make test
+# RUN cd /opt/caffe && make runtest
