@@ -2,26 +2,14 @@ FROM kaixhin/cuda:7.5
 
 MAINTAINER takuya.wakisaka@moldweorp.com
 
-RUN echo "deb http://jp.archive.ubuntu.com/ubuntu/ trusty main restricted \n\
-deb-src http://jp.archive.ubuntu.com/ubuntu/ trusty main restricted \n\
-deb http://jp.archive.ubuntu.com/ubuntu/ trusty-updates main restricted \n\
-deb-src http://jp.archive.ubuntu.com/ubuntu/ trusty-updates main restricted \n\
-deb http://jp.archive.ubuntu.com/ubuntu/ trusty universe \n\
-deb-src http://jp.archive.ubuntu.com/ubuntu/ trusty universe \n\
-deb http://jp.archive.ubuntu.com/ubuntu/ trusty-updates universe \n\
-deb-src http://jp.archive.ubuntu.com/ubuntu/ trusty-updates universe \n\
-deb http://jp.archive.ubuntu.com/ubuntu/ trusty multiverse \n\
-deb-src http://jp.archive.ubuntu.com/ubuntu/ trusty multiverse \n\
-deb http://jp.archive.ubuntu.com/ubuntu/ trusty-updates multiverse \n\
-deb-src http://jp.archive.ubuntu.com/ubuntu/ trusty-updates multiverse \n\
-deb http://jp.archive.ubuntu.com/ubuntu/ trusty-backports main restricted universe multiverse \n\
-deb-src http://jp.archive.ubuntu.com/ubuntu/ trusty-backports main restricted universe multiverse \n\
-deb http://security.ubuntu.com/ubuntu trusty-security main restricted \n\
-deb-src http://security.ubuntu.com/ubuntu trusty-security main restricted \n\
-deb http://security.ubuntu.com/ubuntu trusty-security universe \n\
-deb-src http://security.ubuntu.com/ubuntu trusty-security universe \n\
-deb http://security.ubuntu.com/ubuntu trusty-security multiverse \n\
-deb-src http://security.ubuntu.com/ubuntu trusty-security multiverse" > /etc/apt/sources.list
+RUN echo "deb http://ftp.jaist.ac.jp/ubuntu/ trusty main restricted universe multiverse \n\
+deb-src http://ftp.jaist.ac.jp/ubuntu/ trusty main restricted universe multiverse \n\
+deb http://ftp.jaist.ac.jp/ubuntu/ trusty-updates main restricted universe multiverse \n\
+deb-src http://ftp.jaist.ac.jp/ubuntu/ trusty-updates main restricted universe multiverse \n\
+deb http://ftp.jaist.ac.jp/ubuntu/ trusty-backports main restricted universe multiverse \n\
+deb-src http://ftp.jaist.ac.jp/ubuntu/ trusty-backports main restricted universe multiverse \n\
+deb http://security.ubuntu.com/ubuntu trusty-security main restricted universe multiverse \n\
+deb-src http://security.ubuntu.com/ubuntu trusty-security main restricted universe multiverse" > /etc/apt/sources.list
 
 
 ENV PYTHONPATH /opt/caffe/python
@@ -30,7 +18,7 @@ ENV PYTHONPATH /opt/caffe/python
 ENV PATH $PATH:/opt/caffe/.build_release/tools
 
 # Get dependencies
-RUN rm -rf /var/lib/apt/lists/ && apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y \
   bc \ 
   cmake \ 
   curl \ 
@@ -51,8 +39,6 @@ RUN rm -rf /var/lib/apt/lists/ && apt-get update && apt-get install -y \
   libgoogle-glog-dev \
   liblmdb-dev \
   libboost-all-dev \ 
-  python-dev \  
-  python-pip \ 
   unzip \
   wget \
   && apt-get clean \
@@ -81,15 +67,22 @@ RUN cd /opt/caffe && \
 
 
 # Install python deps
-RUN cd /opt/caffe && easy_install numpy
-RUN cd /opt/caffe && easy_install pillow
-RUN apt-get update && apt-get install -y python-scipy
+# RUN cd /opt/caffe && easy_install numpy
+# RUN cd /opt/caffe && easy_install pillow
+RUN apt-get update && apt-get install -y \
+  python-dev \  
+  python-pip \ 
+  python-numpy \
+  python-skimage \
+  python-scipy \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/
 RUN cd /opt/caffe && pip install -r python/requirements.txt
  
 
 # Numpy include path hack - github.com/BVLC/caffe/wiki/Setting-up-Caffe-on-Ubuntu-14.04
-RUN NUMPY_EGG=`ls /usr/local/lib/python2.7/dist-packages | grep -i numpy` && \
-  ln -s /usr/local/lib/python2.7/dist-packages/$NUMPY_EGG/numpy/core/include/numpy /usr/include/python2.7/numpy
+# RUN NUMPY_EGG=`ls /usr/local/lib/python2.7/dist-packages | grep -i numpy` && \
+#   ln -s /usr/local/lib/python2.7/dist-packages/$NUMPY_EGG/numpy/core/include/numpy /usr/include/python2.7/numpy
 
 # Build Caffe python bindings
 RUN cd /opt/caffe && make pycaffe
