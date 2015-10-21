@@ -17,7 +17,7 @@ RUN apt-get update && sudo apt-get upgrade -y
 # CUDA
 ############
 RUN apt-get update && apt-get install -y \
-  linux-headers-$(uname -r) \
+    #   linux-headers-$(uname -r) \
   build-essential \
   wget
 
