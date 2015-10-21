@@ -11,7 +11,7 @@ deb-src http://ftp.jaist.ac.jp/ubuntu/ trusty-backports main restricted universe
 deb http://security.ubuntu.com/ubuntu trusty-security main restricted universe multiverse \n\
 deb-src http://security.ubuntu.com/ubuntu trusty-security main restricted universe multiverse" > /etc/apt/sources.list
 
-RUN apt-get update && sudo apt-get upgrade
+RUN apt-get update && sudo apt-get upgrade -y
 
 ############
 # CUDA
