@@ -11,7 +11,9 @@ deb-src http://ftp.jaist.ac.jp/ubuntu/ trusty-backports main restricted universe
 deb http://security.ubuntu.com/ubuntu trusty-security main restricted universe multiverse \n\
 deb-src http://security.ubuntu.com/ubuntu trusty-security main restricted universe multiverse" > /etc/apt/sources.list
 
-RUN apt-get update && sudo apt-get upgrade -y
+RUN apt-get update && sudo apt-get upgrade -y \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/
 
 ############
 # CUDA
@@ -19,8 +21,10 @@ RUN apt-get update && sudo apt-get upgrade -y
 RUN apt-get update && apt-get install -y \
     #   linux-headers-$(uname -r) \
   build-essential \
-  wget
-
+  wget \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/
+  
 RUN cd /tmp && \
 # Download run file
   wget http://developer.download.nvidia.com/compute/cuda/7.5/Prod/local_installers/cuda_7.5.18_linux.run && \
@@ -90,16 +94,11 @@ RUN apt-get update && apt-get install -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/
 RUN cd /opt/caffe && pip install -r python/requirements.txt
- 
 
-# Numpy include path hack - github.com/BVLC/caffe/wiki/Setting-up-Caffe-on-Ubuntu-14.04
-# RUN NUMPY_EGG=`ls /usr/local/lib/python2.7/dist-packages | grep -i numpy` && \
-#   ln -s /usr/local/lib/python2.7/dist-packages/$NUMPY_EGG/numpy/core/include/numpy /usr/include/python2.7/numpy
 
 # Build Caffe python bindings
 RUN cd /opt/caffe && make pycaffe
 
- 
 # Make + run tests
 RUN cd /opt/caffe && make -j"$(nproc)" test
 # RUN cd /opt/caffe && make runtest
