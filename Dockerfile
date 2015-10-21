@@ -68,10 +68,10 @@ RUN cd /tmp && \
 ENV PYTHONPATH /opt/caffe/python
 ENV PATH $PATH:/opt/caffe/.build_release/tools
 
-WORKDIR /opt/caffe
-
 # Clone the Caffe repo 
 RUN cd /opt && git clone https://github.com/BVLC/caffe.git && cd caffe &&  git checkout tags/rc2
+
+WORKDIR /opt/caffe
 
 # Build Caffe core
 RUN cp Makefile.config.example Makefile.config && \
