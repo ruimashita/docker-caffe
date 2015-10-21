@@ -11,7 +11,7 @@ deb-src http://ftp.jaist.ac.jp/ubuntu/ trusty-backports main restricted universe
 deb http://security.ubuntu.com/ubuntu trusty-security main restricted universe multiverse \n\
 deb-src http://security.ubuntu.com/ubuntu trusty-security main restricted universe multiverse" > /etc/apt/sources.list
 
-RUN apt-get update && sudo apt-get upgrade -y \
+RUN apt-get update && apt-get upgrade -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/
 
@@ -104,4 +104,4 @@ RUN cd /opt/caffe && make -j"$(nproc)" test
 # RUN cd /opt/caffe && make runtest
 
 # for bug
-sudo ln /dev/null /dev/raw1394
+RUN ln /dev/null /dev/raw1394
