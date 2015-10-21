@@ -1,4 +1,4 @@
-FROM kaixhin/cuda:7.5
+FROM ubuntu:14.04
 
 MAINTAINER takuya.wakisaka@moldweorp.com
 
@@ -12,6 +12,32 @@ deb http://security.ubuntu.com/ubuntu trusty-security main restricted universe m
 deb-src http://security.ubuntu.com/ubuntu trusty-security main restricted universe multiverse" > /etc/apt/sources.list
 
 
+# CUDA
+RUN apt-get update && sudo apt-get upgrade
+
+RUN apt-get update && apt-get install -y \
+  linux-headers-$(uname -r) \
+  build-essential \
+  wget
+
+RUN cd /tmp && \
+# Download run file
+  wget http://developer.download.nvidia.com/compute/cuda/7.5/Prod/local_installers/cuda_7.5.18_linux.run && \
+# Make the run file executable and extract
+  chmod +x cuda_*_linux.run && ./cuda_*_linux.run -extract=`pwd` && \
+# Install CUDA drivers (silent, no kernel)
+  ./NVIDIA-Linux-x86_64-*.run -s --no-kernel-module && \
+# Install toolkit (silent)  
+  ./cuda-linux64-rel-*.run -noprompt && \
+# Clean up
+  rm -rf *
+
+# Add to path
+ENV PATH=/usr/local/cuda/bin:$PATH
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+
+
+
 ENV PYTHONPATH /opt/caffe/python
 
 # Add caffe binaries to path
@@ -22,10 +48,6 @@ RUN apt-get update && apt-get install -y \
   bc \ 
   cmake \ 
   curl \ 
-  gcc-4.6 \ 
-  g++-4.6 \ 
-  gcc-4.6-multilib \  
-  g++-4.6-multilib \ 
   gfortran \ 
   git \ 
   libprotobuf-dev \
@@ -44,20 +66,12 @@ RUN apt-get update && apt-get install -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/
 
-# Use gcc 4.6
-RUN update-alternatives --install /usr/bin/cc cc /usr/bin/gcc-4.6 30 && \
-  update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-4.6 30 && \ 
-  update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 30 && \
-  update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.6 30
-
 # Clone the Caffe repo 
 RUN cd /opt && git clone https://github.com/BVLC/caffe.git && cd caffe &&  git checkout tags/rc2
 
 # Build Caffe core
 RUN cd /opt/caffe && \
   cp Makefile.config.example Makefile.config && \
-  echo "CXX := /usr/bin/g++-4.6" >> Makefile.config && \
-  sed -i 's/CXX :=/CXX ?=/' Makefile && \
   make -j"$(nproc)" all
 
 
@@ -86,3 +100,6 @@ RUN cd /opt/caffe && make pycaffe
 # Make + run tests
 RUN cd /opt/caffe && make -j"$(nproc)" test
 # RUN cd /opt/caffe && make runtest
+
+# for bug
+sudo ln /dev/null /dev/raw1394
