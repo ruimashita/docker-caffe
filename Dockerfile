@@ -83,8 +83,6 @@ RUN cd /opt/caffe && \
 
 
 # Install python deps
-# RUN cd /opt/caffe && easy_install numpy
-# RUN cd /opt/caffe && easy_install pillow
 RUN apt-get update && apt-get install -y \
   python-dev \  
   python-pip \ 
