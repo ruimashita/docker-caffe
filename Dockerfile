@@ -50,11 +50,6 @@ RUN update-alternatives --install /usr/bin/cc cc /usr/bin/gcc-4.6 30 && \
   update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 30 && \
   update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.6 30
 
-
-# Allow it to find CUDA libs
- RUN echo "/usr/local/cuda/lib64" > /etc/ld.so.conf.d/cuda.conf && \
-  ldconfig 
-
 # Clone the Caffe repo 
 RUN cd /opt && git clone https://github.com/BVLC/caffe.git && cd caffe &&  git checkout tags/rc2
 
@@ -63,7 +58,7 @@ RUN cd /opt/caffe && \
   cp Makefile.config.example Makefile.config && \
   echo "CXX := /usr/bin/g++-4.6" >> Makefile.config && \
   sed -i 's/CXX :=/CXX ?=/' Makefile && \
-  make all
+  make -j"$(nproc)" all
 
 
 # Install python deps
@@ -89,5 +84,5 @@ RUN cd /opt/caffe && make pycaffe
 
  
 # Make + run tests
-RUN cd /opt/caffe && make test
+RUN cd /opt/caffe && make -j"$(nproc)" test
 # RUN cd /opt/caffe && make runtest
