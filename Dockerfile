@@ -18,7 +18,7 @@ deb-src http://security.ubuntu.com/ubuntu trusty-security main restricted univer
 ENV PATH=/usr/local/cuda/bin:$PATH
 ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 
-RUN apt-get update apt-get upgrade -y && apt-get install -y \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
   git \ 
   unzip \
   wget \
