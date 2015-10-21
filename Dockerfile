@@ -11,20 +11,45 @@ deb-src http://ftp.jaist.ac.jp/ubuntu/ trusty-backports main restricted universe
 deb http://security.ubuntu.com/ubuntu trusty-security main restricted universe multiverse \n\
 deb-src http://security.ubuntu.com/ubuntu trusty-security main restricted universe multiverse" > /etc/apt/sources.list
 
-RUN apt-get update && apt-get upgrade -y \
+
+####
+# CUDA
+####
+ENV PATH=/usr/local/cuda/bin:$PATH
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+
+RUN apt-get update apt-get upgrade -y && apt-get install -y \
+  git \ 
+  unzip \
+  wget \
+  curl \ 
+
+  # for cuda
+  build-essential \
+
+  # for caffe
+  libprotobuf-dev \
+  libleveldb-dev \
+  libsnappy-dev \
+  libopencv-dev \
+  libhdf5-serial-dev \
+  protobuf-compiler \
+  libatlas-base-dev \  
+  libgflags-dev \ 
+  libgoogle-glog-dev \
+  liblmdb-dev \
+  libboost-all-dev \ 
+
+  # for caffe python
+  python-dev \  
+  python-pip \ 
+  python-numpy \
+  python-skimage \
+  python-scipy \
+
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/
 
-############
-# CUDA
-############
-RUN apt-get update && apt-get install -y \
-    #   linux-headers-$(uname -r) \
-  build-essential \
-  wget \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/
-  
 RUN cd /tmp && \
 # Download run file
   wget http://developer.download.nvidia.com/compute/cuda/7.5/Prod/local_installers/cuda_7.5.18_linux.run && \
@@ -37,62 +62,23 @@ RUN cd /tmp && \
 # Clean up
   rm -rf *
 
-# Add to path
-ENV PATH=/usr/local/cuda/bin:$PATH
-ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
-
 ###########
 # caffe
 ###########
-
 ENV PYTHONPATH /opt/caffe/python
-
-# Add caffe binaries to path
 ENV PATH $PATH:/opt/caffe/.build_release/tools
 
-# Get dependencies
-RUN apt-get update && apt-get install -y \
-  bc \ 
-  cmake \ 
-  curl \ 
-  gfortran \ 
-  git \ 
-  libprotobuf-dev \
-  libleveldb-dev \
-  libsnappy-dev \
-  libopencv-dev \
-  libhdf5-serial-dev \
-  protobuf-compiler \
-  libatlas-base-dev \  
-  libgflags-dev \ 
-  libgoogle-glog-dev \
-  liblmdb-dev \
-  libboost-all-dev \ 
-  unzip \
-  wget \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/
+WORKDIR /opt/caffe
 
 # Clone the Caffe repo 
 RUN cd /opt && git clone https://github.com/BVLC/caffe.git && cd caffe &&  git checkout tags/rc2
 
 # Build Caffe core
-RUN cd /opt/caffe && \
-  cp Makefile.config.example Makefile.config && \
+RUN cp Makefile.config.example Makefile.config && \
   make -j"$(nproc)" all
 
-
 # Install python deps
-RUN apt-get update && apt-get install -y \
-  python-dev \  
-  python-pip \ 
-  python-numpy \
-  python-skimage \
-  python-scipy \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/
 RUN cd /opt/caffe && pip install -r python/requirements.txt
-
 
 # Build Caffe python bindings
 RUN cd /opt/caffe && make pycaffe
