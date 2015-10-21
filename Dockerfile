@@ -19,6 +19,7 @@ ENV PATH=/usr/local/cuda/bin:$PATH
 ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+  bc \
   git \ 
   unzip \
   wget \
