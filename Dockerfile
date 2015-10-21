@@ -11,10 +11,11 @@ deb-src http://ftp.jaist.ac.jp/ubuntu/ trusty-backports main restricted universe
 deb http://security.ubuntu.com/ubuntu trusty-security main restricted universe multiverse \n\
 deb-src http://security.ubuntu.com/ubuntu trusty-security main restricted universe multiverse" > /etc/apt/sources.list
 
-
-# CUDA
 RUN apt-get update && sudo apt-get upgrade
 
+############
+# CUDA
+############
 RUN apt-get update && apt-get install -y \
   linux-headers-$(uname -r) \
   build-essential \
@@ -36,7 +37,9 @@ RUN cd /tmp && \
 ENV PATH=/usr/local/cuda/bin:$PATH
 ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 
-
+###########
+# caffe
+###########
 
 ENV PYTHONPATH /opt/caffe/python
 
