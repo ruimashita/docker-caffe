@@ -78,13 +78,13 @@ RUN cp Makefile.config.example Makefile.config && \
   make -j"$(nproc)" all
 
 # Install python deps
-RUN cd /opt/caffe && pip install -r python/requirements.txt
+RUN pip install -r python/requirements.txt
 
 # Build Caffe python bindings
-RUN cd /opt/caffe && make pycaffe
+RUN make -j"$(nproc)" pycaffe
 
-# Make + run tests
-RUN cd /opt/caffe && make -j"$(nproc)" test
+# test + run tests
+RUN make -j"$(nproc)" test
 # RUN cd /opt/caffe && make runtest
 
 # for bug
