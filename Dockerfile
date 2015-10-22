@@ -53,7 +53,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
 
 RUN cd /tmp && \
 # Download run file
-  wget http://developer.download.nvidia.com/compute/cuda/7.5/Prod/local_installers/cuda_7.5.18_linux.run && \
+  wget http://developer.download.nvidia.com/compute/cuda/7_0/Prod/local_installers/cuda_7.0.28_linux.run && \
 # Make the run file executable and extract
   chmod +x cuda_*_linux.run && ./cuda_*_linux.run -extract=`pwd` && \
 # Install CUDA drivers (silent, no kernel)
