@@ -2,23 +2,19 @@ FROM ubuntu:14.04
 
 MAINTAINER takuya.wakisaka@moldweorp.com
 
-RUN echo "deb http://ftp.jaist.ac.jp/ubuntu/ trusty main restricted universe multiverse \n\
-deb-src http://ftp.jaist.ac.jp/ubuntu/ trusty main restricted universe multiverse \n\
-deb http://ftp.jaist.ac.jp/ubuntu/ trusty-updates main restricted universe multiverse \n\
-deb-src http://ftp.jaist.ac.jp/ubuntu/ trusty-updates main restricted universe multiverse \n\
-deb http://ftp.jaist.ac.jp/ubuntu/ trusty-backports main restricted universe multiverse \n\
-deb-src http://ftp.jaist.ac.jp/ubuntu/ trusty-backports main restricted universe multiverse \n\
-deb http://security.ubuntu.com/ubuntu trusty-security main restricted universe multiverse \n\
-deb-src http://security.ubuntu.com/ubuntu trusty-security main restricted universe multiverse" > /etc/apt/sources.list
-
-
-####
-# CUDA
-####
 ENV PATH=/usr/local/cuda/bin:$PATH
 ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+ENV PYTHONPATH /opt/caffe/python
+ENV PATH $PATH:/opt/caffe/.build_release/tools
+ENV CAFFE_VERSION=tags/rc2
 
-RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+# faster apt source
+RUN echo "deb mirror://mirrors.ubuntu.com/mirrors.txt trusty main restricted universe multiverse \n\
+deb mirror://mirrors.ubuntu.com/mirrors.txt trusty-updates main restricted universe multiverse \n\
+deb mirror://mirrors.ubuntu.com/mirrors.txt trusty-backports main restricted universe multiverse \n\
+deb mirror://mirrors.ubuntu.com/mirrors.txt trusty-security main restricted universe multiverse" > /etc/apt/sources.list
+
+RUN apt-get update && apt-get install -y \
   bc \
   git \ 
   unzip \
@@ -45,11 +41,18 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
   python-dev \  
   python-pip \ 
   python-numpy \
-  python-skimage \
-  python-scipy \
+  # for scipy
+  gfortran \
+  # fix: InsecurePlatformWarning: A true SSLContext object is not available.
+  libffi-dev \
+  libssl-dev \
 
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/
+
+####
+# CUDA
+####
 
 RUN cd /tmp && \
 # Download run file
@@ -66,11 +69,8 @@ RUN cd /tmp && \
 ###########
 # caffe
 ###########
-ENV PYTHONPATH /opt/caffe/python
-ENV PATH $PATH:/opt/caffe/.build_release/tools
 
-# Clone the Caffe repo 
-RUN cd /opt && git clone https://github.com/BVLC/caffe.git && cd caffe &&  git checkout tags/rc2
+RUN cd /opt && git clone https://github.com/BVLC/caffe.git && cd caffe &&  git checkout $CAFFE_VERSION
 
 WORKDIR /opt/caffe
 
@@ -79,14 +79,17 @@ RUN cp Makefile.config.example Makefile.config && \
   make -j"$(nproc)" all
 
 # Install python deps
-RUN pip install -r python/requirements.txt
+RUN pip install --upgrade pip && \
+    # fix: InsecurePlatformWarning: A true SSLContext object is not available.
+    pip install pyopenssl ndg-httpsclient pyasn1 && \
+    for req in $(cat python/requirements.txt); do pip install $req; done
 
-# Build Caffe python bindings
+# Build Caffe python
 RUN make -j"$(nproc)" pycaffe
 
 # test + run tests
 RUN make -j"$(nproc)" test
 # RUN cd /opt/caffe && make runtest
 
-# for bug
+# for bug "libdc1394 error: Failed to initialize libdc1394"
 RUN ln /dev/null /dev/raw1394
