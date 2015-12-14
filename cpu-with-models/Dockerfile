@@ -18,10 +18,10 @@ RUN python scripts/download_model_binary.py models/bvlc_reference_caffenet
 RUN ./scripts/download_model_from_gist.sh b90eb88e31cd745525ae
 RUN python scripts/download_model_binary_ignore_sha1.py models/b90eb88e31cd745525ae
 
-# VGG16: CNN model finetuned on the Salient Object Subitizing
-# https://gist.github.com/jimmie33/27c1c0a7736ba66c2395
-RUN ./scripts/download_model_from_gist.sh 27c1c0a7736ba66c2395
-RUN python scripts/download_model_binary_ignore_sha1.py models/27c1c0a7736ba66c2395
+# VGG_ILSVRC_16_layers
+# https://gist.github.com/ksimonyan/211839e770f7b538e2d8#file-readme-md
+RUN ./scripts/download_model_from_gist.sh 211839e770f7b538e2d8
+RUN cd models/211839e770f7b538e2d8 && wget http://www.robots.ox.ac.uk/~vgg/software/very_deep/caffe/VGG_ILSVRC_16_layers.caffemodel
 
 
 ###
