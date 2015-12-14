@@ -20,8 +20,8 @@ RUN python scripts/download_model_binary_ignore_sha1.py models/b90eb88e31cd74552
 
 # VGG16: CNN model finetuned on the Salient Object Subitizing
 # https://gist.github.com/jimmie33/27c1c0a7736ba66c2395
-RUN ./scripts/download_model_from_gist.sh b90eb88e31cd745525ae
-RUN python scripts/download_model_binary_ignore_sha1.py models/b90eb88e31cd745525ae
+RUN ./scripts/download_model_from_gist.sh 27c1c0a7736ba66c2395
+RUN python scripts/download_model_binary_ignore_sha1.py models/27c1c0a7736ba66c2395
 
 
 ###
