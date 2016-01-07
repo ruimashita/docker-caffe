@@ -33,3 +33,9 @@ RUN cd data/ilsvrc12 && ./get_ilsvrc_aux.sh
 
 # download flickr_style data
 RUN python examples/finetune_flickr_style/assemble_data.py --workers=-1 --images=2000 --seed=831486
+
+
+# Place-CNN Places205-VGG
+# http://places.csail.mit.edu/downloadCNN.html
+RUN cd models && wget http://places.csail.mit.edu/model/places205vgg.tar.gz
+RUN cd models && tar zxvf places205vgg.tar.gz
