@@ -15,13 +15,20 @@ RUN python scripts/download_model_binary.py models/bvlc_reference_caffenet
 
 # GoogLeNet_cars
 # https://gist.github.com/bogger/b90eb88e31cd745525ae
-RUN ./scripts/download_model_from_gist.sh b90eb88e31cd745525ae
-RUN python scripts/download_model_binary_ignore_sha1.py models/b90eb88e31cd745525ae
+RUN ./scripts/download_model_from_gist.sh b90eb88e31cd745525ae \
+    && python scripts/download_model_binary_ignore_sha1.py models/b90eb88e31cd745525ae
 
 # VGG_ILSVRC_16_layers
 # https://gist.github.com/ksimonyan/211839e770f7b538e2d8#file-readme-md
-RUN ./scripts/download_model_from_gist.sh 211839e770f7b538e2d8
-RUN cd models/211839e770f7b538e2d8 && wget http://www.robots.ox.ac.uk/~vgg/software/very_deep/caffe/VGG_ILSVRC_16_layers.caffemodel
+RUN ./scripts/download_model_from_gist.sh 211839e770f7b538e2d8 \
+    && cd models/211839e770f7b538e2d8 \
+    && wget http://www.robots.ox.ac.uk/~vgg/software/very_deep/caffe/VGG_ILSVRC_16_layers.caffemodel
+
+
+# Place-CNN Places205-VGG
+# http://places.csail.mit.edu/downloadCNN.html
+RUN cd models && wget http://places.csail.mit.edu/model/places205vgg.tar.gz \
+    && tar zxvf places205vgg.tar.gz
 
 
 ###
@@ -35,7 +42,4 @@ RUN cd data/ilsvrc12 && ./get_ilsvrc_aux.sh
 RUN python examples/finetune_flickr_style/assemble_data.py --workers=-1 --images=2000 --seed=831486
 
 
-# Place-CNN Places205-VGG
-# http://places.csail.mit.edu/downloadCNN.html
-RUN cd models && wget http://places.csail.mit.edu/model/places205vgg.tar.gz
-RUN cd models && tar zxvf places205vgg.tar.gz
+
