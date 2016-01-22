@@ -36,6 +36,8 @@ RUN apt-get update && apt-get install -y \
   python-dev \
   python-pip \
   python-numpy \
+  # for /opt/caffe/python/draw_net.py
+  python-pydot \
   # for scipy
   gfortran \
   # fix: InsecurePlatformWarning: A true SSLContext object is not available.
