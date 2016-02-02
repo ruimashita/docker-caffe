@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM buildpack-deps:trusty
 
 MAINTAINER takuya.wakisaka@moldweorp.com
 
@@ -15,14 +15,14 @@ deb mirror://mirrors.ubuntu.com/mirrors.txt trusty-backports main restricted uni
 deb mirror://mirrors.ubuntu.com/mirrors.txt trusty-security main restricted universe multiverse" > /etc/apt/sources.list
 
 RUN apt-get update && apt-get install -y \
-  bc \
-  git \ 
-  unzip \
-  wget \
-  curl \ 
+  # bc \
+  # git \ 
+  # unzip \
+  # wget \
+  # curl \ 
 
-  # for cuda
-  build-essential \
+  # # for cuda
+  # build-essential \
 
   # for caffe
   libprotobuf-dev \
