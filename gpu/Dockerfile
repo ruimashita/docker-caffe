@@ -26,17 +26,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   liblmdb-dev \
   libboost-all-dev \ 
 
-  # for caffe python
-  python-dev \  
-  python-pip \ 
-  python-numpy \
   # for /opt/caffe/python/draw_net.py
   python-pydot \
-  # for scipy
-  gfortran \
-  # fix: InsecurePlatformWarning: A true SSLContext object is not available.
-  libffi-dev \
-  libssl-dev \
 
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/
@@ -54,10 +45,7 @@ RUN cp Makefile.config.example Makefile.config && \
   make -j"$(nproc)" all
 
 # Install python deps
-RUN pip install --upgrade pip && \
-    # fix: InsecurePlatformWarning: A true SSLContext object is not available.
-    pip install pyopenssl ndg-httpsclient pyasn1 && \
-    for req in $(cat python/requirements.txt); do pip install $req; done
+RUN for req in $(cat python/requirements.txt); do pip install $req; done
 
 # Build Caffe python
 RUN make -j"$(nproc)" pycaffe
