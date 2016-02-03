@@ -1,4 +1,4 @@
-FROM ruimashita:cuda
+FROM ruimashita/cuda
 
 MAINTAINER takuya.wakisaka@moldweorp.com
 
